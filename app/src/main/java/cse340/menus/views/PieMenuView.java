@@ -2,6 +2,7 @@ package cse340.menus.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -15,10 +16,12 @@ import cse340.menus.enums.State;
 
 // Documentation
 // drawArc: https://thoughtbot.com/blog/android-canvas-drawarc-method-a-visual-guide
+// drawTextOnPath: https://developer.android.com/reference/android/graphics/Canvas
 public class PieMenuView extends MenuExperimentView {
 
-    /** Class constant used to determine the size of the pie menu */
+    /** Class constants used to determine the size of the pie menu */
     private static final float RADIUS_RATIO = 0.347f;
+    private static final float TEXT_OFFSET_RATIO = 0.055f;
 
     /**
      * Degrees by which to offset each menu item to ensure the first item is at the top of the menu
@@ -28,6 +31,19 @@ public class PieMenuView extends MenuExperimentView {
 
     /** Actual radius of the pie menu once determined by the display metrics */
     private int RADIUS;
+
+    /** Height of menu item text */
+    private float FONT_HEIGHT;
+
+    /** Horizontal offset for menu item text */
+    private float TEXT_H_OFFSET;
+
+    /** Offset from edges of container where menu starts */
+    private float MENU_OFFSET;
+
+    /** Sweep angle for each menu item */
+    private float WEDGE_DEGREES;
+
 
 
 
@@ -52,10 +68,16 @@ public class PieMenuView extends MenuExperimentView {
         RADIUS = (int) (RADIUS_RATIO * Math.min(mDisplayMetrics.widthPixels,
                 mDisplayMetrics.heightPixels));
 
-        // TODO: set layout parameters with proper width and height
-        this.setLayoutParams(new ViewGroup.LayoutParams((int) (RADIUS * 2 + getBorderPaint().getStrokeWidth()), (int) (RADIUS * 2 + getBorderPaint().getStrokeWidth())));
+        // TODO: set layout parameters with proper width and FONT_HEIGHT
+        float size = RADIUS * 2 + getHighlightPaint().getStrokeWidth();
+        this.setLayoutParams(new ViewGroup.LayoutParams((int) size, (int) size));
 
         // TODO: initialize any fields you need to (you may create whatever you need)
+        Paint.FontMetrics fm = getTextPaint().getFontMetrics();
+        FONT_HEIGHT = fm.descent - fm.ascent;
+        TEXT_H_OFFSET = TEXT_OFFSET_RATIO * Math.min(mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels);
+        MENU_OFFSET = getHighlightPaint().getStrokeWidth() / 2f;
+        WEDGE_DEGREES = 360f / getItems().size();
     }
 
     /**
@@ -66,18 +88,10 @@ public class PieMenuView extends MenuExperimentView {
     @Override
     protected void startSelection(PointF point) {
         // TODO change the x/y location of this menu so it is centered on the cursor
-        // get new origin
-//        float origin = RADIUS + getBorderPaint().getStrokeWidth() / 2f;
-//        float newX = -(origin - point.x);
-//        float newY = origin - point.y;
-//        System.out.println(point.x);
-//        System.out.println(point.y);
-        System.out.println(RADIUS);
-        System.out.println(getBorderPaint().getStrokeWidth());
-        this.setX(getX() - RADIUS - getBorderPaint().getStrokeWidth() / 2f);
-        this.setY(getY() - RADIUS - getBorderPaint().getStrokeWidth() / 2f);
-//        setY(point.y - RADIUS + getBorderPaint().getStrokeWidth() / 2f);
-//        point.set(newX, newY);
+        this.setX(getX() - RADIUS - MENU_OFFSET);
+        this.setY(getY() - RADIUS - MENU_OFFSET);
+
+//        point.set(-(RADIUS - MENU_OFFSET - point.x), RADIUS - MENU_OFFSET - point.y);
 
         // let the parent handle other standard stuff
         super.startSelection(point);
@@ -104,7 +118,21 @@ public class PieMenuView extends MenuExperimentView {
          *
          * Hint: Just as in color picker, you should look to the atan function for your pie menu’s essentialGeometry function.
          */
-        return -1; // Temporary
+        if (getDistance(p, new PointF(getWidth() / 2f, getHeight() / 2f)) < MIN_DIST) {
+            return -1;
+        }
+
+        // adjust x,y and get point on the circle
+        float x = -(RADIUS - MENU_OFFSET - p.x);
+        float y = RADIUS - MENU_OFFSET - p.y;
+        double degrees = -Math.toDegrees(Math.atan2(y, x));
+
+        // adjust point on the circle according to layout of menu
+        degrees += -(DEGREE_OFFSET - WEDGE_DEGREES / 2f);
+        degrees = degrees < 0 ? degrees + 360 : degrees;
+
+        // get corresponding menu item
+        return (int) (degrees / WEDGE_DEGREES);
     }
 
     /**
@@ -127,22 +155,24 @@ public class PieMenuView extends MenuExperimentView {
          * because angle is traditionally measured from cardinal east. You can add this in radians before converting from angle to index.
          * Hint: Your pie menu text does not need to be centered – as long as it is contained within the outer ring of the pie menu, you are fine.
          */
-
-        float halfStroke = getBorderPaint().getStrokeWidth() / 2f;
-        float wedgeWidth = 360f / getItems().size();
-        float startAngle = -(wedgeWidth / 2f + halfStroke);
-        System.out.println(getItems());
+        Path textPath = new Path();
+        float startAngle;
         for (int i = 0; i < getItems().size(); i++) {
-            if (i == getCurrentIndex()) {
-//                canvas.drawArc(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke, startAngle - i * DEGREE_OFFSET, wedgeWidth, true, getHighlightPaint());
-                canvas.drawArc(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke, i * wedgeWidth, wedgeWidth, true, getHighlightPaint());
+            startAngle = i * WEDGE_DEGREES - WEDGE_DEGREES / 2f + DEGREE_OFFSET;
+            // draw menu circle
+            canvas.drawArc(MENU_OFFSET, MENU_OFFSET, getWidth() - MENU_OFFSET, getHeight() - MENU_OFFSET, startAngle, WEDGE_DEGREES, true, getBorderPaint());
+            canvas.drawArc(2 * FONT_HEIGHT, 2 * FONT_HEIGHT, getHeight() - 2 * FONT_HEIGHT, getHeight() - 2 * FONT_HEIGHT, startAngle, WEDGE_DEGREES, true, getBorderPaint());
 
-            } else {
-//                canvas.drawArc(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke, startAngle - i * DEGREE_OFFSET, wedgeWidth, true, getBorderPaint());
-                canvas.drawArc(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke, i * wedgeWidth, wedgeWidth, true, getHighlightPaint());
+            // draw text
+            textPath.reset();
+            textPath.addArc(MENU_OFFSET + FONT_HEIGHT, MENU_OFFSET + FONT_HEIGHT, getHeight() - MENU_OFFSET - FONT_HEIGHT, getHeight() - MENU_OFFSET - FONT_HEIGHT, startAngle, WEDGE_DEGREES);
+            canvas.drawTextOnPath(getItems().get(i), textPath, TEXT_H_OFFSET, 0, getTextPaint());
+        }
 
-            }
-//            canvas.drawText(getItems().get(i), TEXT_OFFSET, i * CELL_HEIGHT + TEXT_OFFSET, getTextPaint());
+        // highlight selection
+        if (getCurrentIndex() != -1) {
+            startAngle = getCurrentIndex() * WEDGE_DEGREES - WEDGE_DEGREES / 2f + DEGREE_OFFSET;
+            canvas.drawArc(MENU_OFFSET, MENU_OFFSET, getWidth() - MENU_OFFSET, getHeight() - MENU_OFFSET, startAngle, WEDGE_DEGREES, true, getHighlightPaint());
         }
     }
 }
