@@ -91,9 +91,6 @@ public class PieMenuView extends MenuExperimentView {
         this.setX(getX() - RADIUS - MENU_OFFSET);
         this.setY(getY() - RADIUS - MENU_OFFSET);
 
-//        point.set(-(RADIUS - MENU_OFFSET - point.x), RADIUS - MENU_OFFSET - point.y);
-
-        // let the parent handle other standard stuff
         super.startSelection(point);
     }
 
@@ -123,7 +120,7 @@ public class PieMenuView extends MenuExperimentView {
         }
 
         // adjust x,y and get point on the circle
-        float x = -(RADIUS - MENU_OFFSET - p.x);
+        float x = -(RADIUS + MENU_OFFSET - p.x);
         float y = RADIUS - MENU_OFFSET - p.y;
         double degrees = -Math.toDegrees(Math.atan2(y, x));
 
@@ -160,8 +157,8 @@ public class PieMenuView extends MenuExperimentView {
         for (int i = 0; i < getItems().size(); i++) {
             startAngle = i * WEDGE_DEGREES - WEDGE_DEGREES / 2f + DEGREE_OFFSET;
             // draw menu circle
-            canvas.drawArc(MENU_OFFSET, MENU_OFFSET, getWidth() - MENU_OFFSET, getHeight() - MENU_OFFSET, startAngle, WEDGE_DEGREES, true, getBorderPaint());
-            canvas.drawArc(2 * FONT_HEIGHT, 2 * FONT_HEIGHT, getHeight() - 2 * FONT_HEIGHT, getHeight() - 2 * FONT_HEIGHT, startAngle, WEDGE_DEGREES, true, getBorderPaint());
+            canvas.drawArc(MENU_OFFSET, MENU_OFFSET, getWidth() - MENU_OFFSET, getHeight() - MENU_OFFSET, startAngle, WEDGE_DEGREES, false, getBorderPaint());
+            canvas.drawArc(2 * FONT_HEIGHT, 2 * FONT_HEIGHT, getHeight() - 2 * FONT_HEIGHT, getHeight() - 2 * FONT_HEIGHT, startAngle, WEDGE_DEGREES, false, getBorderPaint());
 
             // draw text
             textPath.reset();

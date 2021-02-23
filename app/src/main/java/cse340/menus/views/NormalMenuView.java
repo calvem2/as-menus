@@ -92,7 +92,7 @@ public class NormalMenuView extends MenuExperimentView {
             return (int) (p.y  / (CELL_HEIGHT + getBorderPaint().getStrokeWidth()));
         }
 
-        return -1;  // Temporary
+        return -1;
     }
 
     /**
