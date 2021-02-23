@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import java.util.List;
@@ -12,13 +13,23 @@ import java.util.List;
 import cse340.menus.ExperimentTrial;
 import cse340.menus.enums.State;
 
+// Documentation
+// drawArc: https://thoughtbot.com/blog/android-canvas-drawarc-method-a-visual-guide
 public class PieMenuView extends MenuExperimentView {
 
     /** Class constant used to determine the size of the pie menu */
     private static final float RADIUS_RATIO = 0.347f;
 
+    /**
+     * Degrees by which to offset each menu item to ensure the first item is at the top of the menu
+     * and the rest continue clockwise around the menu
+     */
+    private static final float DEGREE_OFFSET = -90F;
+
     /** Actual radius of the pie menu once determined by the display metrics */
     private int RADIUS;
+
+
 
     public PieMenuView(Context context, List<String> items) {
         super(context, items);
@@ -35,13 +46,16 @@ public class PieMenuView extends MenuExperimentView {
     @Override
     protected void setup() {
         // TODO: set initial state to START
+        mState = State.START;
+
         // Determine the radius of the pie menu
         RADIUS = (int) (RADIUS_RATIO * Math.min(mDisplayMetrics.widthPixels,
                 mDisplayMetrics.heightPixels));
 
         // TODO: set layout parameters with proper width and height
-        // TODO: initialize any fields you need to (you may create whatever you need)
+        this.setLayoutParams(new ViewGroup.LayoutParams((int) (RADIUS * 2 + getBorderPaint().getStrokeWidth()), (int) (RADIUS * 2 + getBorderPaint().getStrokeWidth())));
 
+        // TODO: initialize any fields you need to (you may create whatever you need)
     }
 
     /**
@@ -52,6 +66,18 @@ public class PieMenuView extends MenuExperimentView {
     @Override
     protected void startSelection(PointF point) {
         // TODO change the x/y location of this menu so it is centered on the cursor
+        // get new origin
+//        float origin = RADIUS + getBorderPaint().getStrokeWidth() / 2f;
+//        float newX = -(origin - point.x);
+//        float newY = origin - point.y;
+//        System.out.println(point.x);
+//        System.out.println(point.y);
+        System.out.println(RADIUS);
+        System.out.println(getBorderPaint().getStrokeWidth());
+        this.setX(getX() - RADIUS - getBorderPaint().getStrokeWidth() / 2f);
+        this.setY(getY() - RADIUS - getBorderPaint().getStrokeWidth() / 2f);
+//        setY(point.y - RADIUS + getBorderPaint().getStrokeWidth() / 2f);
+//        point.set(newX, newY);
 
         // let the parent handle other standard stuff
         super.startSelection(point);
@@ -101,5 +127,22 @@ public class PieMenuView extends MenuExperimentView {
          * because angle is traditionally measured from cardinal east. You can add this in radians before converting from angle to index.
          * Hint: Your pie menu text does not need to be centered – as long as it is contained within the outer ring of the pie menu, you are fine.
          */
+
+        float halfStroke = getBorderPaint().getStrokeWidth() / 2f;
+        float wedgeWidth = 360f / getItems().size();
+        float startAngle = -(wedgeWidth / 2f + halfStroke);
+        System.out.println(getItems());
+        for (int i = 0; i < getItems().size(); i++) {
+            if (i == getCurrentIndex()) {
+//                canvas.drawArc(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke, startAngle - i * DEGREE_OFFSET, wedgeWidth, true, getHighlightPaint());
+                canvas.drawArc(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke, i * wedgeWidth, wedgeWidth, true, getHighlightPaint());
+
+            } else {
+//                canvas.drawArc(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke, startAngle - i * DEGREE_OFFSET, wedgeWidth, true, getBorderPaint());
+                canvas.drawArc(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke, i * wedgeWidth, wedgeWidth, true, getHighlightPaint());
+
+            }
+//            canvas.drawText(getItems().get(i), TEXT_OFFSET, i * CELL_HEIGHT + TEXT_OFFSET, getTextPaint());
+        }
     }
 }

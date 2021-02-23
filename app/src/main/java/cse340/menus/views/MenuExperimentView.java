@@ -17,7 +17,10 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
      * @param context
      * @param trial Experiment trial (contains a list of items)
      */
-    public MenuExperimentView(Context context, ExperimentTrial trial) { super(context, trial); }
+    public MenuExperimentView(Context context, ExperimentTrial trial) {
+        super(context, trial);
+//        getHighlightPaint().setStrokeWidth(3);
+    }
 
     /**
      * Constructor
@@ -25,7 +28,10 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
      * @param context
      * @param items Items to display in menu
      */
-    public MenuExperimentView(Context context, List<String> items) { super(context, items); }
+    public MenuExperimentView(Context context, List<String> items) {
+        super(context, items);
+//        getHighlightPaint().setStrokeWidth(3);
+    }
 
     /**
      * Calculates the index of the menu item using the current finger position
@@ -58,11 +64,24 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
          * fetch the menu's current state, and process it accordingly.
          */
 
-        /*
-         * switch (state) {
-         * . . .
-         * }
-         */
+
+         switch (mState) {
+             case START:
+                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                     mState = State.SELECTING;
+                     startSelection(new PointF(event.getX(), event.getY()));
+                     return true;
+                 }
+             case SELECTING:
+                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                     updateModel(menuItem);
+                     return true;
+                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                     mState = State.START;
+                     endSelection(menuItem, new PointF(event.getX(), event.getY()));
+                     return true;
+                 }
+         }
         return false;
     }
 
@@ -77,7 +96,17 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
      */
     protected void startSelection(PointF point) {
         // TODO: 1) call trial.startTrial() (only if in experiment mode), passing it the position of the mouse
-        // TODO: 2) Make this visible 
+        // TODO: 2) Make this visible
+//        mState = State.SELECTING;
+        setVisibility(VISIBLE);
+        if (!experimentMode()) {
+            System.out.println("NOT IN EXPERIMENT MODE");
+        }
+
+        if (experimentMode()) {
+            getTrial().startTrial(point);
+        }
+
     }
 
     /**
@@ -92,6 +121,16 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
         // TODO:    b) call onTrialCompleted(trial)
         // TODO: 2) reset state machine
         // think about what might need to be reset here. What fields are used in your state machine?
+        String toast = menuItem != -1 ? "selected " + getItem() : "Nothing Selected";
+        announce(toast);
+        if (experimentMode()) {
+            getTrial().endTrial(point, menuItem);
+            this.getTrialListener().onTrialCompleted(getTrial());
+        }
+
+        setVisibility(INVISIBLE);
+//        mState = State.START;
+
     }
 
     /**
@@ -101,5 +140,9 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
     protected void updateModel(int menuItem) {
         // TODO: check if the item selected has changed. If so
         // TODO: 1) update your menu's model
+        if (getCurrentIndex() != menuItem) {
+            setCurrentIndex(menuItem);
+            invalidate();
+        }
     }
 }

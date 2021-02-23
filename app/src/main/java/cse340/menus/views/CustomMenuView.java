@@ -23,6 +23,7 @@ public class CustomMenuView extends MenuExperimentView {
         // TODO: set initial state to START
         // TODO: set layout parameters with proper width and height
         // TODO: initialize any fields you need to (you may create whatever you need)
+        mState = State.START;
     }
 
     /**

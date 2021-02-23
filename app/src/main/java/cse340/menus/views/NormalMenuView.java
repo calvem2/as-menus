@@ -3,6 +3,8 @@ package cse340.menus.views;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PointF;
+import android.text.Layout;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -35,6 +37,16 @@ public class NormalMenuView extends MenuExperimentView {
      */
     private float TEXT_OFFSET;
 
+//    /**
+//     * Height of the menu container excluding space allocated for highlight
+//     */
+//    private float menuHeight;
+    /**
+     * Offset from edges of container where menu starts
+     */
+    private float menuOffset;
+
+
     public NormalMenuView(Context context, List<String> items) {
         super(context, items);
     }
@@ -50,6 +62,7 @@ public class NormalMenuView extends MenuExperimentView {
     @Override
     protected void setup() {
         // TODO: set initial state to START
+        mState = State.START;
 
         // Determine the dimensions of the normal menu
         CELL_HEIGHT = CELL_HEIGHT_RATIO * Math.min(mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels);
@@ -57,8 +70,19 @@ public class NormalMenuView extends MenuExperimentView {
         TEXT_OFFSET = TEXT_OFFSET_RATIO * Math.min(mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels);
 
         // TODO: set layout parameters with proper width and height
+//        LayoutParams
+//        android.view.ViewGroup.LayoutParams params = this.getLayoutParams();
+//        params.height = (int) (CELL_HEIGHT * getItems().size());
+//        params.width = (int) (CELL_WIDTH * getItems().size());
+        System.out.println(CELL_WIDTH + getHighlightPaint().getStrokeWidth());
+//        float totalCellHeight = getItems().size() * CELL_HEIGHT;
+        this.setLayoutParams(new ViewGroup.LayoutParams((int) (CELL_WIDTH + getHighlightPaint().getStrokeWidth()),
+                (int) (getItems().size() * CELL_HEIGHT + getHighlightPaint().getStrokeWidth())));
 
         // TODO: initialize any fields you need to (you may create whatever you need)
+//        menuHeight = totalCellHeight + getBorderPaint().getStrokeWidth();
+        menuOffset = getHighlightPaint().getStrokeWidth() / 2f;
+
     }
 
     /**
@@ -77,6 +101,16 @@ public class NormalMenuView extends MenuExperimentView {
          * Remember: you should not be altering the state of your application in this function --
          * you should only return the result.
          */
+//        ViewGroup.LayoutParams params = this.getLayoutParams();
+//        System.out.println(params.width + ", " + params.height);
+//        System.out.println(getWidth() + ", " + getHeight());
+//        double dist = Math.sqrt(p.x * p.x + p.y * p.y);
+        if (getDistance(p) >= MIN_DIST && 0 <= p.x && p.x <= getWidth() && menuOffset <= p.y && p.y <= getHeight() - menuOffset) {
+//            System.out.println(p.y);
+//            System.out.println(CELL_HEIGHT);
+            // todo factor in stroke
+            return (int) (p.y  / (CELL_HEIGHT + getBorderPaint().getStrokeWidth()));
+        }
 
         return -1;  // Temporary
     }
@@ -97,5 +131,20 @@ public class NormalMenuView extends MenuExperimentView {
          * You may change the paint properties for the menu if desired.
          * You can also choose to draw the text horizontally instead of vertically.
          */
+//        float menuOffset = getHighlightPaint().getStrokeWidth();
+//        float menuOffset = getHighlightPaint().getStrokeWidth() / 2f;
+        for (int i = 0; i < getItems().size(); i++) {
+            canvas.drawRect(menuOffset, i * CELL_HEIGHT + menuOffset, CELL_WIDTH, i * CELL_HEIGHT + CELL_HEIGHT + menuOffset, getBorderPaint());
+//            if (i == getCurrentIndex()) {
+//                canvas.drawRect(menuOffset, i * CELL_HEIGHT + menuOffset, CELL_WIDTH, i * CELL_HEIGHT + CELL_HEIGHT, getHighlightPaint());
+//            } else {
+//                canvas.drawRect(menuOffset, i * CELL_HEIGHT + menuOffset, CELL_WIDTH, i * CELL_HEIGHT + CELL_HEIGHT, getBorderPaint());
+//            }
+            canvas.drawText(getItems().get(i), TEXT_OFFSET, i * CELL_HEIGHT + TEXT_OFFSET, getTextPaint());
+        }
+//        System.out.println(getCurrentIndex());
+        if (getCurrentIndex() != -1) {
+            canvas.drawRect(menuOffset, getCurrentIndex() * CELL_HEIGHT + menuOffset, CELL_WIDTH, getCurrentIndex() * CELL_HEIGHT + CELL_HEIGHT + menuOffset, getHighlightPaint());
+        }
     }
 }

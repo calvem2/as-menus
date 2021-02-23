@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Menus</string>
     <string name="action_next_session">Next Session</string>
+    <string name="action_no_next">No next session</string>
     <string name="action_clear_result_CSV">Reset and Clear Result CSV</string>
     <string name="session_completed">Session is completed</string>
     <string name="trial_message">In %1$s menu, select %2$s</string>

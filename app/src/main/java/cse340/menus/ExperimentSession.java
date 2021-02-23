@@ -27,10 +27,10 @@ public class ExperimentSession implements Iterator {
     public static final String TAG = "Menus";
 
     /** How many times should each trial repeat? */
-    private final int NUM_REPEATS = 3;
+    private final int NUM_REPEATS = 2;
 
     /** Maximum number of menu items to go through in each condition. */
-    private final int ITEM_MAX = 4;
+    private final int ITEM_MAX = 1;
 
     /** This is the file where experiment results will be recorded */
     private File mExperimentResultCSV;

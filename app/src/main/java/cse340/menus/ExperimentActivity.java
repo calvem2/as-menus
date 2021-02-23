@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import cse340.menus.views.AbstractMenuExperimentView;
+
 public class ExperimentActivity extends AbstractMainActivity {
 
     /**
@@ -50,5 +52,19 @@ public class ExperimentActivity extends AbstractMainActivity {
         //          instruction view to say the session is completed by using R.string.session_completed
         //          from strings.xml. For completeness, don’t forget to reset the session (to null)
         //          if you are done with all of the sessions.
+        mMenuView.setTrialListener(new TrialListener() {
+            @Override
+            public void onTrialCompleted(ExperimentTrial trial) {
+                mSession.recordResult();
+                if (mSession.hasNext()) {
+                    showMenuForTrial(mSession.next());
+                } else {
+                    mSession = null;
+                    mMenuView.setTrial(null);
+                    mMenuView.announce(getString(R.string.action_no_next));
+                    instructionTextView.setText(getString(R.string.session_completed));
+                }
+            }
+        });
     }
 }
