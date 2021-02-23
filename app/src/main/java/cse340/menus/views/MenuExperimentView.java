@@ -97,14 +97,10 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
     protected void startSelection(PointF point) {
         // TODO: 1) call trial.startTrial() (only if in experiment mode), passing it the position of the mouse
         // TODO: 2) Make this visible
-//        mState = State.SELECTING;
-        setVisibility(VISIBLE);
-        if (!experimentMode()) {
-            System.out.println("NOT IN EXPERIMENT MODE");
-        }
 
         if (experimentMode()) {
             getTrial().startTrial(point);
+            setVisibility(VISIBLE);
         }
 
     }
@@ -129,8 +125,6 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
         }
 
         setVisibility(INVISIBLE);
-//        mState = State.START;
-
     }
 
     /**
