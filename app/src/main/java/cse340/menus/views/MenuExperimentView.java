@@ -19,7 +19,6 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
      */
     public MenuExperimentView(Context context, ExperimentTrial trial) {
         super(context, trial);
-//        getHighlightPaint().setStrokeWidth(3);
     }
 
     /**
@@ -30,7 +29,6 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
      */
     public MenuExperimentView(Context context, List<String> items) {
         super(context, items);
-//        getHighlightPaint().setStrokeWidth(3);
     }
 
     /**
@@ -64,12 +62,11 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
          * fetch the menu's current state, and process it accordingly.
          */
 
-
          switch (mState) {
              case START:
                  if (event.getAction() == MotionEvent.ACTION_DOWN) {
                      mState = State.SELECTING;
-                     startSelection(new PointF(event.getX(), event.getY()));
+                     startSelection(new PointF(event.getRawX(), event.getRawY()));
                      return true;
                  }
              case SELECTING:
@@ -78,7 +75,7 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
                      return true;
                  } else if (event.getAction() == MotionEvent.ACTION_UP) {
                      mState = State.START;
-                     endSelection(menuItem, new PointF(event.getX(), event.getY()));
+                     endSelection(menuItem, new PointF(event.getRawX(), event.getRawY()));
                      return true;
                  }
          }
@@ -100,8 +97,8 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
 
         if (experimentMode()) {
             getTrial().startTrial(point);
-            setVisibility(VISIBLE);
         }
+        setVisibility(VISIBLE);
 
     }
 
@@ -123,7 +120,6 @@ public abstract class MenuExperimentView extends AbstractMenuExperimentView {
             getTrial().endTrial(point, menuItem);
             this.getTrialListener().onTrialCompleted(getTrial());
         }
-
         setVisibility(INVISIBLE);
     }
 

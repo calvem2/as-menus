@@ -61,7 +61,6 @@ public class CustomMenuView extends MenuExperimentView {
         for (int i = 0; i < getItems().size(); i++) {
             MENU_POINTS[i] = new PointF(origin + (float) (RADIUS * Math.cos(i * SPACING)),
                     origin - (float) (RADIUS * Math.sin(i * SPACING)));
-            System.out.println(MENU_POINTS[i]);
         }
     }
 
@@ -102,7 +101,6 @@ public class CustomMenuView extends MenuExperimentView {
             bottom = MENU_POINTS[i].y + ITEM_SIZE / 2f;
 
             if (left <= p.x && p.x <= right && top <= p.y && p.y <= bottom) {
-                System.out.println(i);
                 return i;
             }
         }

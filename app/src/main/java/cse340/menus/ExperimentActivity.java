@@ -57,7 +57,9 @@ public class ExperimentActivity extends AbstractMainActivity {
             public void onTrialCompleted(ExperimentTrial trial) {
                 mSession.recordResult();
                 if (mSession.hasNext()) {
-                    showMenuForTrial(mSession.next());
+                    ExperimentTrial curr = mSession.next();
+                    showMenuForTrial(curr);
+                    mMenuView.setTrial(curr);
                 } else {
                     mSession = null;
                     mMenuView.setTrial(null);

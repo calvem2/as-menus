@@ -68,7 +68,7 @@ public class PieMenuView extends MenuExperimentView {
         RADIUS = (int) (RADIUS_RATIO * Math.min(mDisplayMetrics.widthPixels,
                 mDisplayMetrics.heightPixels));
 
-        // TODO: set layout parameters with proper width and FONT_HEIGHT
+        // TODO: set layout parameters with proper width and height
         float size = RADIUS * 2 + getHighlightPaint().getStrokeWidth();
         this.setLayoutParams(new ViewGroup.LayoutParams((int) size, (int) size));
 
