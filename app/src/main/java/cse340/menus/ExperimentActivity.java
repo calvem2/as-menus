@@ -63,7 +63,7 @@ public class ExperimentActivity extends AbstractMainActivity {
                 } else {
                     mSession = null;
                     mMenuView.setTrial(null);
-                    mMenuView.announce(getString(R.string.action_no_next));
+                    mMenuView.announce(getString(R.string.session_completed));
                     instructionTextView.setText(getString(R.string.session_completed));
                 }
             }
