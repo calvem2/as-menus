@@ -26,9 +26,6 @@ public class CustomMenuView extends MenuExperimentView {
     private float TEXT_H_OFFSET;
 
     /** Radians between each menu item */
-    private double SPACING;
-
-    /** Radians between each menu item */
     private PointF[] MENU_POINTS;
 
     public CustomMenuView(Context context, ExperimentTrial trial) { super(context, trial); }
@@ -49,7 +46,6 @@ public class CustomMenuView extends MenuExperimentView {
         ITEM_SIZE = SIZE_RATIO * Math.min(mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels);
         RADIUS = (int) (RADIUS_RATIO * Math.min(mDisplayMetrics.widthPixels,
                 mDisplayMetrics.heightPixels));
-        SPACING = Math.toRadians(360.0 / getItems().size());
         MENU_POINTS = new PointF[getItems().size()];
 
         // Set layout params
@@ -58,9 +54,10 @@ public class CustomMenuView extends MenuExperimentView {
 
         // Get points where menu items will be
         float origin = size / 2f;
+        double spacing = Math.toRadians(360.0 / getItems().size());
         for (int i = 0; i < getItems().size(); i++) {
-            MENU_POINTS[i] = new PointF(origin + (float) (RADIUS * Math.cos(i * SPACING)),
-                    origin - (float) (RADIUS * Math.sin(i * SPACING)));
+            MENU_POINTS[i] = new PointF(origin + (float) (RADIUS * Math.cos(i * spacing)),
+                    origin - (float) (RADIUS * Math.sin(i * spacing)));
         }
     }
 

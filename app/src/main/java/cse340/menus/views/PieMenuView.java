@@ -32,9 +32,6 @@ public class PieMenuView extends MenuExperimentView {
     /** Actual radius of the pie menu once determined by the display metrics */
     private int RADIUS;
 
-    /** Height of menu item text */
-    private float FONT_HEIGHT;
-
     /** Horizontal offset for menu item text */
     private float TEXT_H_OFFSET;
 
@@ -43,8 +40,6 @@ public class PieMenuView extends MenuExperimentView {
 
     /** Sweep angle for each menu item */
     private float WEDGE_DEGREES;
-
-
 
 
     public PieMenuView(Context context, List<String> items) {
@@ -73,8 +68,6 @@ public class PieMenuView extends MenuExperimentView {
         this.setLayoutParams(new ViewGroup.LayoutParams((int) size, (int) size));
 
         // TODO: initialize any fields you need to (you may create whatever you need)
-        Paint.FontMetrics fm = getTextPaint().getFontMetrics();
-        FONT_HEIGHT = fm.descent - fm.ascent;
         TEXT_H_OFFSET = TEXT_OFFSET_RATIO * Math.min(mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels);
         MENU_OFFSET = getHighlightPaint().getStrokeWidth() / 2f;
         WEDGE_DEGREES = 360f / getItems().size();
@@ -158,11 +151,11 @@ public class PieMenuView extends MenuExperimentView {
             startAngle = i * WEDGE_DEGREES - WEDGE_DEGREES / 2f + DEGREE_OFFSET;
             // draw menu circle
             canvas.drawArc(MENU_OFFSET, MENU_OFFSET, getWidth() - MENU_OFFSET, getHeight() - MENU_OFFSET, startAngle, WEDGE_DEGREES, false, getBorderPaint());
-            canvas.drawArc(2 * FONT_HEIGHT, 2 * FONT_HEIGHT, getHeight() - 2 * FONT_HEIGHT, getHeight() - 2 * FONT_HEIGHT, startAngle, WEDGE_DEGREES, false, getBorderPaint());
+            canvas.drawArc(MENU_OFFSET + 2 * TEXT_SIZE, MENU_OFFSET + 2 * TEXT_SIZE, getHeight() - MENU_OFFSET - 2 * TEXT_SIZE, getHeight() - MENU_OFFSET - 2 * TEXT_SIZE, startAngle, WEDGE_DEGREES, false, getBorderPaint());
 
             // draw text
             textPath.reset();
-            textPath.addArc(MENU_OFFSET + FONT_HEIGHT, MENU_OFFSET + FONT_HEIGHT, getHeight() - MENU_OFFSET - FONT_HEIGHT, getHeight() - MENU_OFFSET - FONT_HEIGHT, startAngle, WEDGE_DEGREES);
+            textPath.addArc(MENU_OFFSET + TEXT_SIZE, MENU_OFFSET + TEXT_SIZE, getHeight() - MENU_OFFSET - TEXT_SIZE, getHeight() - MENU_OFFSET - TEXT_SIZE, startAngle, WEDGE_DEGREES);
             canvas.drawTextOnPath(getItems().get(i), textPath, TEXT_H_OFFSET, 0, getTextPaint());
         }
 
